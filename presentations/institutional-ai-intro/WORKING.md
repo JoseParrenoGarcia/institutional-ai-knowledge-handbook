@@ -11,7 +11,7 @@ The speaker's goal is to shift the mental model of the discipline from "document
 ## Presentation Brief
 
 - **Audience:** ~60 data scientists and managers, mixed seniority
-- **Format:** Lightning talk, ~10 minutes (not yet committed to slide deck vs. doc)
+- **Format:** ~15 minutes (not yet committed to slide deck vs. doc)
 - **Tone:** Mix — open with vision, close with concrete near-term actions
 - **Current stage:** Brainstorming — content and flow, not final format
 
@@ -47,7 +47,7 @@ The speaker's goal is to shift the mental model of the discipline from "document
 - Do not over-engineer the structure — this is a talk, not a whitepaper
 - Do not invent statistics or cite sources without flagging them as unverified
 - Do not skip the "why this matters to me personally" angle — the talk needs a human anchor
-- Do not suggest adding more than 10 slides — the 10-minute limit is hard
+- Do not suggest adding more than 14 slides — the 15-minute limit is hard
 - Do not make the future vision abstract or utopian — ground it in recognisable work scenarios
 
 ---
