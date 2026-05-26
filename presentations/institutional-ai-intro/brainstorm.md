@@ -314,6 +314,12 @@ The agent flags — it doesn't fix. A weekly digest surfaces what's drifted; a h
 
 ---
 
+## Related Artefacts
+
+- **Confluence page (DS People Managers):** [Institutional AI: Building Knowledge That Compounds](https://skyscanner.atlassian.net/wiki/spaces/DSTeam/pages/2592147004/Institutional+AI+Building+Knowledge+That+Compounds) — 5-minute brief for managers covering definition, maturity levels, examples, next phase, and asking for their input on the vision.
+
+---
+
 ## Open Questions / Things to Resolve
 
 - [ ] What are the final 3 goals? (options are drafted — needs a decision)
