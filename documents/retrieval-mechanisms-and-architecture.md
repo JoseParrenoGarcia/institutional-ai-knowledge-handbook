@@ -293,6 +293,7 @@ And rather less glamorous than many marketing diagrams suggest.
 | Feature: PageRank Repo Map (GitHub Issue #535) | https://github.com/NousResearch/hermes-agent/issues/535 | GitHub issue / architecture proposal | High | Proposes graph-based repository context ranking using Personalized PageRank and directed symbol graphs to optimise token-efficient retrieval. |
 | Repository map - Aider | https://aider.chat/docs/repomap.html | Engineering documentation | High | Describes Aider’s repository mapping system for compressed repository understanding using dependency-aware graph ranking. |
 | Securely indexing large codebases - Cursor | https://cursor.com/blog/secure-codebase-indexing | Engineering article | High | Details semantic repository indexing infrastructure using Merkle trees, shared indexes, and secure incremental indexing strategies. |
+| llm-wiki-compiler | https://github.com/atomicstrata/llm-wiki-compiler | GitHub repository | High | Implements knowledge compilation as a complement to agentic RAG: a two-phase concept extraction and page generation pipeline producing graph-linked wiki artifacts with token-budgeted context packs. |
 
 ---
 
@@ -787,6 +788,63 @@ Operational trade-offs around:
 remain partially unresolved.
 
 Still, the infrastructure maturity appears credible.
+
+---
+
+## Source — llm-wiki-compiler (llmwiki)
+
+### Metadata
+
+- Source type: GitHub repository
+- Signal strength: High
+- Primary relevance: Knowledge compilation as a complementary retrieval philosophy to RAG
+- URL: https://github.com/atomicstrata/llm-wiki-compiler
+
+### Core argument
+
+llmwiki implements the knowledge compilation pattern: raw sources are compiled once into a persistent, interlinked markdown wiki. The core retrieval distinction is:
+
+```
+RAG:     query → search chunks → answer → forget
+llmwiki: sources → compile → wiki → query → save → richer wiki → better answers
+```
+
+Rather than re-discovering relationships at query time, the system pre-computes them into a structured artifact. Future queries retrieve from the compiled wiki rather than raw source chunks.
+
+### Key ideas and highlights
+
+Architecturally notable features:
+
+- two-phase pipeline eliminating order-dependence: Phase 1 extracts all concepts from all sources; Phase 2 generates interlinked pages with `[[wikilink]]` resolution;
+- context graph packs (v0.8.0): `llmwiki context` and MCP `get_context_pack` produce token-budgeted evidence packs containing primary pages, graph neighbours, citations, optional source windows, warnings, and suggested actions;
+- typed page schema: `concept`, `entity`, `comparison`, `overview` — structured retrieval artifacts rather than flat chunks;
+- incremental indexing via SHA-256 hash change detection — only changed sources go through the LLM;
+- compounding queries: saved query answers become new wiki pages, improving future retrieval context;
+- MCP server integration (`llmwiki serve`) makes the compiled wiki directly queryable by agents.
+
+### Why this matters for institutional AI
+
+Knowledge compilation represents a distinct retrieval architecture from agentic RAG:
+
+- RAG is dynamic, stateless, and re-discovers relationships per query;
+- compiled wikis are persistent artifacts with explicit graph structure, source attribution, and typed page kinds.
+
+The context graph packs feature is particularly relevant as a retrieval architecture: it provides structured, graph-aware, token-budgeted context delivery — aligned with the broader trend towards retrieval as operational context infrastructure rather than chunk retrieval.
+
+The two are complementary rather than competing. RAG excels at ad-hoc retrieval over large, frequently-updated corpora. Knowledge compilation excels at extracting relational depth from stable, high-signal corpora and accumulating understanding over time.
+
+### Practical implications for DS/ML teams
+
+Operational patterns worth considering:
+
+- compiled wikis as a retrieval substrate for stable, high-signal corpora (papers, design docs, decision records);
+- context graph packs as a token-efficient graph-aware context delivery mechanism;
+- hash-based incremental indexing as a lightweight alternative to full re-embedding on source changes;
+- MCP server integration for agent-queryable institutional wikis.
+
+### Limitations and caveats
+
+Best suited for small, high-signal corpora. Query routing is index-based rather than full graph traversal, limiting recall for loosely-structured corpora. An evaluation harness benchmarking against retrieval baselines is on the roadmap rather than implemented. Production-scale adoption evidence remains limited.
 
 ---
 

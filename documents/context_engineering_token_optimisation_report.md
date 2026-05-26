@@ -59,6 +59,8 @@ Meanwhile, the most speculative areas remain:
 | How Do AI Agents Spend Your Money? | https://arxiv.org/pdf/2604.22750 | Research paper | High | Empirical analysis of token consumption trajectories across coding-agent systems. |
 | Managing Deployment Costs with AI Coding Agents | https://www.mindstudio.ai/blog/managing-deployment-costs-ai-coding-agents | Vendor engineering article | Medium | Examines hidden infrastructure and CI/CD costs caused by coding agents. |
 | context-llemur | https://github.com/jerpint/context-llemur | GitHub repository | Medium | Git-native persistent context management system for portable LLM workflows. |
+| llm-wiki-compiler | https://github.com/atomicstrata/llm-wiki-compiler | GitHub repository | High | Implements knowledge compilation as a complement to RAG: compiles raw sources into a persistent interlinked wiki with token-budgeted context graph packs. |
+| Modern ML/DS project Architecture for human and AI | https://medium.com/@DangTLam/modern-ml-ds-project-architecture-for-human-and-ai-f26ac89d568d | Engineering article | Medium | Proposes progressive discovery and explicit lineage principles for ML/DS repositories, with direct reasoning about agent context constraints and partial-context failure modes. |
 
 ---
 
@@ -262,6 +264,108 @@ Potentially useful patterns include:
 ### Limitations and caveats
 
 The project remains experimental with limited evidence of production-scale adoption.
+
+---
+
+## Source — llm-wiki-compiler (llmwiki)
+
+### Metadata
+
+- Source type: GitHub repository
+- Signal strength: High
+- Primary relevance: Knowledge compilation as persistent context architecture
+- URL: https://github.com/atomicstrata/llm-wiki-compiler
+
+### Core argument
+
+llmwiki implements Karpathy's LLM Wiki pattern: compile raw sources once into a persistent, interlinked markdown wiki rather than re-discovering relationships at query time via RAG.
+
+The fundamental architectural distinction is:
+
+```
+RAG:     query → search chunks → answer → forget
+llmwiki: sources → compile → wiki → query → save → richer wiki → better answers
+```
+
+The two patterns are complementary. RAG handles ad-hoc retrieval over large corpora; the compiled wiki provides a persistent, structured artifact that compounds over time.
+
+### Key ideas and highlights
+
+Core operational features:
+
+- two-phase compilation pipeline: concept extraction from all sources first, then page generation with `[[wikilink]]` resolution;
+- incremental compilation via SHA-256 hash-based change detection — only changed sources re-enter the LLM;
+- compounding queries: `llmwiki query --save` writes the answer back as a wiki page, enriching future query context;
+- context graph packs (v0.8.0): `llmwiki context` produces token-budgeted evidence packs with primary pages, graph neighbours, citations, source windows, and suggested actions;
+- claim-level provenance: paragraphs are annotated with `^[filename.md:line-range]` markers pointing back to source files.
+
+### Why this matters for institutional AI
+
+Knowledge compilation surfaces a key tension in institutional AI context design:
+
+- RAG optimises for breadth and freshness over large corpora;
+- knowledge compilation optimises for relational depth and accumulated understanding over high-signal corpora.
+
+For institutional AI systems that process recurring themes — research papers, design documents, decision records — compiled wikis may offer better compound retrieval quality than re-discovery pipelines.
+
+The context graph packs feature directly addresses token budget management: rather than naïve chunk retrieval, it assembles structured, budget-constrained evidence packets using graph traversal.
+
+### Practical implications for DS/ML teams
+
+Potentially useful patterns include:
+
+- compiled wikis as a retrieval substrate complementary to RAG;
+- hash-based incremental compilation to minimise redundant LLM processing;
+- token-budgeted graph context packs for structured context delivery to agents;
+- `--save` patterns for compounding institutional knowledge from agent queries.
+
+### Limitations and caveats
+
+Self-described as best suited for small, high-signal corpora (a few dozen sources). Query routing is index-based, which limits scalability for large corpora. Truncation handling is honest but not eliminated. An evaluation harness against retrieval baselines remains on the roadmap rather than implemented.
+
+---
+
+## Source — Modern ML/DS project Architecture for human and AI
+
+### Metadata
+
+- Source type: Engineering article
+- Signal strength: Medium
+- Primary relevance: Repository structure as agent context management
+- URL: https://medium.com/@DangTLam/modern-ml-ds-project-architecture-for-human-and-ai-f26ac89d568d
+
+### Core argument
+
+The article proposes a deliverable-centric DS/ML repository layout and argues explicitly that file-type-organised repositories create context management failures for agents. It frames the structural problem in terms directly applicable to context engineering: agents work in short loops with partial context, and implicit dependencies cause them to act on the wrong source of truth.
+
+### Key ideas and highlights
+
+Context-relevant structural patterns:
+
+- **Progressive discovery**: each artifact folder has a single entrypoint (README + canonical config + run command), limiting the amount of context an agent needs to load to orient itself;
+- **Explicit lineage via DVC**: dependencies declared in machine-readable pipeline definitions rather than reconstructed from prose or file naming conventions;
+- **Journal as long-term memory**: timestamped markdown entries for decisions and insights, versioned and linked to specific artifacts, living in the repo alongside the code;
+- **All context lives in the repo**: a direct prescription against externalising context into Slack, Notion, or human working memory.
+
+### Why this matters for institutional AI
+
+The article's agent failure modes map directly onto token and context management concerns:
+
+- implicit dependencies require agents to load and reconstruct context that could instead be declared;
+- per-folder front doors reduce context window consumption by enabling progressive, scoped retrieval rather than whole-repo loading;
+- the journal pattern is a form of governed, versioned externalised long-term memory — one of this document's core recommended patterns.
+
+### Practical implications for DS/ML teams
+
+Context-engineering takeaways:
+
+- scoped artifact folders reduce the context surface area agents must load per task;
+- explicit DVC lineage enables agents to determine dependency scope without context-expensive reasoning;
+- the journal as structured, versioned, in-repo context is immediately implementable and directly reduces agent reliance on tribal knowledge.
+
+### Limitations and caveats
+
+Primary focus is repository structure rather than context engineering. The context-management reasoning is implicit and illustrative rather than empirically tested. Best read alongside the repository structure document.
 
 ---
 

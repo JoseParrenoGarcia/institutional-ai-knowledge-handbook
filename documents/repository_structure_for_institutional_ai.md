@@ -263,6 +263,8 @@ That is a rather different engineering problem.
 | This should've been an .agents¹ with an index.md | https://news.ycombinator.com/item?id=43000000 | Community discussion | Medium | Discussion around hierarchical `.agents/` structures versus monolithic `AGENTS.md` approaches for large repositories. |
 | What Is LLMs.txt? The Guide To AI Search & GEO | https://www.yotpo.com/blog/what-is-llms-txt/ | Vendor article | Medium | Explains llms.txt as an AI-oriented discovery mechanism analogous to robots.txt or sitemaps for LLM indexing. |
 | Cursor Rules Guide | https://www.johnplummer.com/blog/Cursor%2BRules%2BGuide | Engineering article | Medium | Practical implementation guidance for structuring Cursor rules, rule inheritance, and contextual AI instruction management. |
+| llm-wiki-compiler | https://github.com/atomicstrata/llm-wiki-compiler | GitHub repository | High | Compiles raw sources into typed, interlinked markdown wikis with rich frontmatter metadata, claim-level provenance, and session history ingest for institutional memory. |
+| Modern ML/DS project Architecture for human and AI | https://medium.com/@DangTLam/modern-ml-ds-project-architecture-for-human-and-ai-f26ac89d568d | Engineering article | High | Proposes a deliverable-centric ML/DS repo layout organised by pipeline concept (datasets, model, deployments, journal) with progressive discovery, explicit DVC lineage, and a journal as durable agent-readable context. |
 
 ---
 
@@ -805,6 +807,118 @@ There is limited evidence around:
 - or evaluation methodologies.
 
 Still, the operational guidance is practical and aligned with broader ecosystem patterns.
+
+---
+
+## Source — llm-wiki-compiler (llmwiki)
+
+### Metadata
+
+- Source type: GitHub repository
+- Signal strength: High
+- Primary relevance: Compiled interlinked wikis as institutional knowledge structure
+- URL: https://github.com/atomicstrata/llm-wiki-compiler
+
+### Core argument
+
+llmwiki compiles raw sources into a structured, interlinked markdown wiki. The resulting artifact is not documentation in the traditional sense — it is a machine-readable institutional knowledge structure with typed pages, rich frontmatter metadata, claim-level provenance, and graph-linked concepts.
+
+### Key ideas and highlights
+
+Structurally relevant features:
+
+- typed page kinds: `concept`, `entity`, `comparison`, `overview` — explicit schema layer rather than flat prose;
+- rich frontmatter metadata: `title`, `summary`, `kind`, `sources`, `createdAt`, `updatedAt`, with `truncated` and `confidence` fields for operational trust signals;
+- claim-level provenance: paragraphs annotated with `^[filename.md:line-range]` markers tracing content back to source files;
+- `[[wikilink]]` resolution across pages — explicit graph linking rather than implicit semantic similarity;
+- session history adapters: `llmwiki ingest-session` ingests Claude, Codex, and Cursor session exports, converting agent activity into durable institutional memory;
+- export formats: `llms.txt`, JSON, JSON-LD, GraphML — machine-readable knowledge artifacts designed for downstream agent and retrieval consumption;
+- candidate review queue: compiled output can be queued for human approval before pages are written;
+- lint pass: quality checks on wiki health, with a cached `.llmwiki/last-lint.json` for agent-accessible health summaries.
+
+### Why this matters for institutional AI
+
+This tool operationalises several patterns discussed in this document:
+
+- typed page kinds align with the shift from documentation as prose towards documentation as structured retrieval infrastructure;
+- frontmatter metadata with freshness timestamps and confidence fields implements metadata as an organising primitive;
+- session history adapters address institutional memory capture from agent workflows — converting ephemeral agent activity into governed, versioned knowledge;
+- the candidate review queue is a concrete human approval gate for AI-generated knowledge artifacts;
+- export to `llms.txt` and GraphML connects compiled institutional knowledge to broader AI-discovery and graph retrieval patterns.
+
+### Practical implications for DS/ML teams
+
+Potentially applicable patterns:
+
+- compiling stable institutional knowledge (design docs, architecture notes, research summaries) into typed, interlinked wiki artifacts;
+- using session ingest to capture and persist knowledge from agent coding sessions;
+- frontmatter confidence and contradiction metadata as freshness and trust signals for institutional knowledge;
+- lint health summaries as lightweight verification infrastructure for knowledge quality.
+
+### Limitations and caveats
+
+Best suited for small, high-signal corpora. Session ingest quality depends on source coherence. The project is early-stage with limited evidence of enterprise adoption. An evaluation harness benchmarking answer quality and citation accuracy is on the roadmap. Fully automated institutional memory maintenance remains speculative.
+
+---
+
+## Source — Modern ML/DS project Architecture for human and AI
+
+### Metadata
+
+- Source type: Engineering article
+- Signal strength: High
+- Primary relevance: Deliverable-centric DS/ML repository structure for agent + human collaboration
+- URL: https://medium.com/@DangTLam/modern-ml-ds-project-architecture-for-human-and-ai-f26ac89d568d
+
+### Core argument
+
+The article argues that file-type-organised DS/ML repositories (`src/`, `notebooks/`, `data/`, `configs/`) are structurally insufficient for agentic workflows. It proposes organising instead by pipeline concept, where each top-level folder is a self-sufficient artifact unit: `datasets/`, `model/`, `deployments/`, `analyses/`, `journal/`.
+
+The four design goals frame the case directly around agent constraints:
+1. **Minimal context switching** — a task should touch a small, predictable set of directories;
+2. **Progressive discovery** — each artifact folder has a single entrypoint (README + canonical config + run command);
+3. **Explicit lineage** — dependencies live in executable definitions (DVC pipelines), not human memory;
+4. **All context lives in the repo** — decisions, insights, and experiment conclusions in timestamped markdown, linked to specific code and artifact versions.
+
+### Key ideas and highlights
+
+Concrete structural elements:
+
+- each artifact folder is self-sufficient and independently reproducible, with a `README.md` (front door), `schema.yaml` or `config/`, and a canonical build or run script;
+- `journal/` as the long-term memory of the project: timestamped markdown entries for decisions, experiment results, and rationale, pointing to specific code versions;
+- explicit machine-discoverable lineage via DVC (`dvc dag`, `dvc status`, `dvc repro`) — dependencies are not inferred, they are declared;
+- `datasets/` folders structured to be independently publishable (HuggingFace-compatible frontmatter metadata);
+- `model/` contains no exploratory notebooks — only canonical training/evaluation configs and scripts;
+- `src/` is a proper Python package imported by all other folders, not an ad-hoc scripts directory.
+
+### Why this matters for institutional AI
+
+The article is explicit about why file-type structure fails for agents:
+
+- agents operate in short loops with partial context; implicit dependencies cause them to edit the wrong config or produce plausible-but-incorrect results;
+- parallel agent experimentation requires strict separation of concerns and discoverable dependencies — without it, experiments collide;
+- agents cannot rely on tribal knowledge, Slack messages, or working memory; if context lives outside the repo, agents make incorrect choices.
+
+This operationalises several patterns central to this document:
+
+- the `journal/` folder directly implements documentation as structured retrieval infrastructure rather than prose, with versioned, timestamped, linked entries;
+- progressive discovery (each folder has a front door) is a concrete implementation of retrieval locality;
+- explicit DVC lineage is a machine-readable dependency graph rather than a flat text description;
+- the all-context-in-repo principle directly supports freshness guarantees and context boundaries for agents.
+
+### Practical implications for DS/ML teams
+
+Highly actionable near-term patterns:
+
+- reorganise repositories from file-type layout to pipeline-concept layout;
+- introduce a `journal/` folder as the canonical, versioned home for decisions and experiment conclusions;
+- enforce explicit DVC lineage for all dataset-to-model dependencies;
+- add a `README.md`, `schema.yaml`, and canonical run script to each artifact folder as a minimum discoverability standard;
+- treat `src/` as a published library, not a scripts directory.
+
+### Limitations and caveats
+
+The article is a practitioner blog post rather than an empirical study. Evidence is primarily illustrative and anecdotal. The proposed layout is opinionated — some DS/ML workflows (rapid prototyping, research-heavy environments) may require adaptation. The cookiecutter implementation was in progress at time of writing and not yet released. The article's Reddit community discussion (https://www.reddit.com/r/datascience/comments/1rmfkug/new_mlds_project_structure_for_human_ai/) is likely a companion post promoting the same ideas.
 
 ---
 
